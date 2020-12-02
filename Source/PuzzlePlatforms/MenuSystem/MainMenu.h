@@ -3,38 +3,57 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "MenuInterface.h"
+#include "MenuWidget.h"
 #include "MainMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
 public:
 	virtual bool Initialize();
 
-	void SetMenuInterface(IMenuInterface* MenuInterface);
-
-	void Setup();
-
 	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
 private:
-	APlayerController* PlayerController;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* HostButton;
+	class UButton* MainMenu_HostButton;
 	
 	UPROPERTY(meta = (BindWidget))
-	class UButton* JoinButton;
+	class UButton* MainMenu_JoinButton;
 
-	IMenuInterface* _MenuInterface;
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinMenu_BackButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* JoinMenu_JoinButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* IPAddressField;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* MainMenu;
 
 	UFUNCTION()
 	void HostServer();
+
+	UFUNCTION()
+	void JoinServer();
+
+	UFUNCTION()
+	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenJoinMenu();
 };
