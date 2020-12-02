@@ -28,7 +28,7 @@ void UPuzzlePlatformsGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Found class: %s"), *MainMenuClass->GetName());
 }
 
-void UPuzzlePlatformsGameInstance::LoadMainMenu()
+void UPuzzlePlatformsGameInstance::LoadMainMenuWidget()
 {
 	if (!ensure(MainMenuClass != nullptr)) return;
 
@@ -40,7 +40,7 @@ void UPuzzlePlatformsGameInstance::LoadMainMenu()
 	MainMenu->SetMenuInterface(this);
 }
 
-void UPuzzlePlatformsGameInstance::LoadInGameMenu()
+void UPuzzlePlatformsGameInstance::LoadInGameMenuWidget()
 {
 	if (!ensure(InGameMenuClass != nullptr)) return;
 
@@ -76,4 +76,12 @@ void UPuzzlePlatformsGameInstance::Join(const FString& Address)
 	if (!ensure(PlayerController != nullptr)) return;
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformsGameInstance::LoadMainMenu()
+{
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", ETravelType::TRAVEL_Absolute);
 }

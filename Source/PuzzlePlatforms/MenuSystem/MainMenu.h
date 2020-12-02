@@ -15,7 +15,7 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	GENERATED_BODY()
 
 public:
-	virtual bool Initialize();
+	virtual bool Initialize() override;
 
 	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
@@ -32,6 +32,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* JoinMenu_JoinButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* MainMenu_QuitButton;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
@@ -56,4 +59,7 @@ private:
 
 	UFUNCTION()
 	void OpenJoinMenu();
+
+	UFUNCTION()
+	void QuitGame();
 };

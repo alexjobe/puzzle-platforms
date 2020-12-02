@@ -23,8 +23,11 @@ void UMenuWidget::Setup()
 
 void UMenuWidget::Teardown()
 {
+	this->RemoveFromViewport();
+
 	FInputModeGameOnly InputModeData;
 
+	if (!ensure(PlayerController != nullptr)) return;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->bShowMouseCursor = false;
 }
