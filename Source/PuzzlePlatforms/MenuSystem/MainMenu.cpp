@@ -25,7 +25,7 @@ bool UMainMenu::Initialize()
 	if (!Success) return false;
 
 	if (!ensure(MainMenu_HostButton != nullptr)) return false;
-	MainMenu_HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+	MainMenu_HostButton->OnClicked.AddDynamic(this, &UMainMenu::OpenHostMenu);
 
 	if (!ensure(MainMenu_JoinButton != nullptr)) return false;
 	MainMenu_JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
@@ -39,6 +39,12 @@ bool UMainMenu::Initialize()
 	if (!ensure(MainMenu_QuitButton != nullptr)) return false;
 	MainMenu_QuitButton->OnClicked.AddDynamic(this, &UMainMenu::QuitGame);
 
+	if (!ensure(HostMenu_BackButton != nullptr)) return false;
+	HostMenu_BackButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+
+	if (!ensure(HostMenu_HostButton != nullptr)) return false;
+	HostMenu_HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+
 	return true;
 }
 
@@ -49,7 +55,7 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
 	Teardown();
 }
 
-void UMainMenu::SetServerList(const TArray<FString> ServerNames)
+void UMainMenu::SetServerList(const TArray<FServerData> ServerData)
 {
 	UWorld* World = GetWorld();
 
@@ -59,12 +65,17 @@ void UMainMenu::SetServerList(const TArray<FString> ServerNames)
 	ServerList->ClearChildren();
 
 	uint32 i = 0;
-	for (const FString& ServerName : ServerNames)
+	for (const FServerData& Data : ServerData)
 	{
 		UServerRow* Row = CreateWidget<UServerRow>(World, ServerRowClass);
 		if (!ensure(Row != nullptr)) return;
 
-		Row->ServerName->SetText(FText::FromString(ServerName));
+		Row->ServerName->SetText(FText::FromString(Data.ServerName));
+		Row->HostUser->SetText(FText::FromString(Data.HostUserName));
+
+		FString FractionText = FString::Printf(TEXT("%d/%d"), Data.CurrentPlayers, Data.MaxPlayers);
+		Row->ConnectionFraction->SetText(FText::FromString(FractionText));
+
 		Row->Setup(this, i);
 		++i;
 
@@ -75,13 +86,27 @@ void UMainMenu::SetServerList(const TArray<FString> ServerNames)
 void UMainMenu::SelectIndex(uint32 Index)
 {
 	SelectedIndex = Index;
+	UpdateChildren();
+}
+
+void UMainMenu::UpdateChildren()
+{
+	for (int32 i = 0; i < ServerList->GetChildrenCount(); ++i)
+	{
+		UServerRow* Row = Cast<UServerRow>(ServerList->GetChildAt(i));
+		if (Row)
+		{
+			Row->Selected = (SelectedIndex.IsSet() && SelectedIndex.GetValue() == i);
+		}
+	}
 }
 
 void UMainMenu::HostServer()
 {
-	if (_MenuInterface != nullptr)
+	if (_MenuInterface != nullptr && ServerHostName != nullptr)
 	{
-		_MenuInterface->Host();
+		FString ServerName = ServerHostName->GetText().ToString();
+		_MenuInterface->Host(ServerName);
 	}
 }
 
@@ -117,6 +142,14 @@ void UMainMenu::OpenJoinMenu()
 	}
 
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+}
+
+void UMainMenu::OpenHostMenu()
+{
+	if (!ensure(MenuSwitcher != nullptr)) return;
+	if (!ensure(HostMenu != nullptr)) return;
+
+	MenuSwitcher->SetActiveWidget(HostMenu);
 }
 
 void UMainMenu::QuitGame()

@@ -30,7 +30,7 @@ public:
 	void LoadInGameMenuWidget();
 
 	UFUNCTION(Exec)
-	void Host();
+	void Host(FString ServerName);
 
 	UFUNCTION(Exec)
 	void Join(const uint32 Index);
@@ -54,5 +54,6 @@ private:
 	void OnFindSessionsComplete(bool Success);
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
+	FString DesiredServerName;
 	void CreateSession();
 };
