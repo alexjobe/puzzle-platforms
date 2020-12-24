@@ -39,6 +39,8 @@ public:
 
 	void RefreshServerList();
 
+	void StartSession();
+
 private:
 	TSubclassOf<class UMenuWidget> MainMenuClass;
 	TSubclassOf<class UMenuWidget> InGameMenuClass;
